@@ -1,0 +1,56 @@
+site_name: Sistema de Gestão de Patrimônio
+site_description: Documentação técnica do sistema de gerenciamento de bens patrimoniais
+site_author: Equipe de TI
+docs_dir: docs
+
+theme:
+  name: material
+  language: pt
+  palette:
+    - scheme: default
+      primary: blue
+      accent: light blue
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.top
+    - search.suggest
+    - content.code.copy
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.tabbed:
+      alternate_style: true
+  - tables
+  - attr_list
+
+nav:
+  - Início: index.md
+  - Visão Geral:
+      - Stack Tecnológica: visao-geral/stack.md
+      - Início Rápido (5 min): visao-geral/readme.md
+      - Endpoints da API: visao-geral/api.md
+      - Variáveis de Ambiente: visao-geral/env.md
+  - Banco de Dados:
+      - DDL – Criação das Tabelas: banco-de-dados/ddl.md
+      - DML – Dados Iniciais: banco-de-dados/dml.md
+      - DQL – Consultas Úteis: banco-de-dados/dql.md
+      - DCL – Permissões Oracle: banco-de-dados/dcl.md
+      - Modelo Lógico: banco-de-dados/modelo-logico.md
+      - DER – Diagrama ER: banco-de-dados/der.md
+  - Guia de Manutenção:
+      - Setup de Desenvolvimento: manutencao/setup-dev.md
+      - Testes: manutencao/testes.md
+      - Débito Técnico Conhecido: manutencao/debito-tecnico.md
+  - Para Evolução:
+      - Padrões de Projeto e Código: evolucao/padroes.md
+      - Deploy e Dockerização: evolucao/producao.md
