@@ -20,6 +20,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
     Route::resource('bens', BemController::class);
+    Route::get('bens-exportar', [BemController::class, 'exportar'])->name('bens.exportar');
+    Route::post('bens-importar', [BemController::class, 'importar'])->name('bens.importar');
     Route::resource('usuarios', UsuarioController::class);
     Route::resource('unidades', UnidadeController::class);
     Route::resource('salas', SalaController::class);

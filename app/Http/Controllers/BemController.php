@@ -7,7 +7,10 @@ use App\Models\Unidade;
 use App\Models\Sala;
 use App\Models\CategoriaBem;
 use App\Models\Usuario;
+use App\Exports\BensExport;
+use App\Imports\BensImport;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 class BemController extends Controller
 {
@@ -132,5 +135,30 @@ class BemController extends Controller
     {
         $bem->delete();
         return redirect()->route('bens.index')->with('success', 'Bem removido com sucesso!');
+    }
+
+    public function exportar(Request $request)
+    {
+        $filtros = $request->only(['busca', 'unidade_id', 'sala_id', 'categoria_id', 'status']);
+        $nomeArquivo = 'bens_' . now()->format('Ymd_His') . '.xlsx';
+
+        return Excel::download(new BensExport($filtros), $nomeArquivo);
+    }
+
+    public function importar(Request $request)
+    {
+        $request->validate([
+            'arquivo' => 'required|file|mimes:xlsx,xls,csv|max:5120',
+        ]);
+
+        $import = new BensImport();
+        Excel::import($import, $request->file('arquivo'));
+
+        $msg = "Importação concluída: {$import->importados} bem(ns) importado(s)";
+        if ($import->ignorados > 0) {
+            $msg .= ", {$import->ignorados} ignorado(s) (duplicados ou inválidos)";
+        }
+
+        return redirect()->route('bens.index')->with('success', $msg . '.');
     }
 }

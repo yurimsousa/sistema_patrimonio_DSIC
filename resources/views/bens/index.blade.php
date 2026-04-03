@@ -63,9 +63,18 @@
             <i class="bi bi-laptop me-2 text-primary"></i>
             {{ $bens->total() }} bem(ns) encontrado(s)
         </h6>
-        <a href="{{ route('bens.create') }}" class="btn btn-primary btn-sm">
-            <i class="bi bi-plus-lg me-1"></i>Novo Bem
-        </a>
+        <div class="d-flex gap-2">
+            <a href="{{ route('bens.exportar', request()->query()) }}"
+               class="btn btn-success btn-sm" title="Exportar lista atual para Excel">
+                <i class="bi bi-file-earmark-excel me-1"></i>Exportar .xlsx
+            </a>
+            <button type="button" class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalImportar" title="Importar bens via planilha">
+                <i class="bi bi-upload me-1"></i>Importar .xlsx
+            </button>
+            <a href="{{ route('bens.create') }}" class="btn btn-primary btn-sm">
+                <i class="bi bi-plus-lg me-1"></i>Novo Bem
+            </a>
+        </div>
     </div>
     <div class="card-body p-0">
         <div class="table-responsive">
@@ -135,6 +144,46 @@
         </div>
     @endif
 </div>
+<!-- Modal Importar -->
+<div class="modal fade" id="modalImportar" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-upload me-2"></i>Importar Bens via Planilha</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form action="{{ route('bens.importar') }}" method="POST" enctype="multipart/form-data">
+                @csrf
+                <div class="modal-body">
+                    <p class="text-muted small mb-3">
+                        Faça upload de uma planilha <strong>.xlsx</strong> com as colunas abaixo.
+                        Bens com número de patrimônio já existente serão ignorados.
+                    </p>
+                    <div class="bg-light rounded p-3 mb-3 small font-monospace">
+                        nome | no_patrimonio | no_serie | marca | modelo | categoria | unidade | sala | responsavel | status | valor_r | data_aquisicao | observacoes
+                    </div>
+                    <div class="alert alert-info small py-2">
+                        <i class="bi bi-info-circle me-1"></i>
+                        <strong>Dica:</strong> Exporte a lista atual e use como modelo para importação.
+                        Categoria, Unidade, Sala e Responsável devem ter o nome exato cadastrado no sistema.
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Arquivo <span class="text-danger">*</span></label>
+                        <input type="file" name="arquivo" class="form-control" accept=".xlsx,.xls,.csv" required>
+                        <div class="form-text">Formatos aceitos: .xlsx, .xls, .csv — Máx. 5MB</div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary btn-sm">
+                        <i class="bi bi-upload me-1"></i>Importar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 @endsection
 
 @push('scripts')
