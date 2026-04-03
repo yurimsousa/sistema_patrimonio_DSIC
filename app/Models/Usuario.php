@@ -19,7 +19,7 @@ class Usuario extends Model
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-            ->logFillable()
+            ->logOnly(['nome', 'matricula', 'cargo', 'unidade_id', 'ativo'])
             ->logOnlyDirty()
             ->setDescriptionForEvent(fn(string $eventName) => match($eventName) {
                 'created' => "Usuário '{$this->nome}' foi cadastrado",

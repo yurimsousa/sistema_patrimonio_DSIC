@@ -17,7 +17,7 @@ class Unidade extends Model
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-            ->logFillable()
+            ->logOnly(['nome', 'sigla', 'ativo'])
             ->logOnlyDirty()
             ->setDescriptionForEvent(fn(string $eventName) => match($eventName) {
                 'created' => "Unidade '{$this->nome}' foi cadastrada",

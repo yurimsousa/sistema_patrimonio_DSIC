@@ -26,7 +26,7 @@ class Bem extends Model
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-            ->logFillable()
+            ->logOnly(['nome', 'numero_patrimonio', 'categoria_id', 'unidade_id', 'sala_id', 'usuario_id', 'status', 'valor', 'data_aquisicao'])
             ->logOnlyDirty()
             ->setDescriptionForEvent(fn(string $eventName) => match($eventName) {
                 'created' => "Bem '{$this->nome}' foi cadastrado",
@@ -63,7 +63,7 @@ class Bem extends Model
             'inativo'    => 'Inativo',
             'manutencao' => 'Em Manutenção',
             'descartado' => 'Descartado',
-            default      => $this->status,
+            default      => $this->status ?? 'Indefinido',
         };
     }
 

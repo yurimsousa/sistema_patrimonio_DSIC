@@ -100,16 +100,16 @@
             <div class="card-body px-4">
                 <h6 class="fw-semibold mb-3"><i class="bi bi-clock me-2 text-secondary"></i>Registro</h6>
                 <div class="text-muted small">Cadastrado em</div>
-                <div class="fw-semibold">{{ $bem->created_at->format('d/m/Y H:i') }}</div>
+                <div class="fw-semibold">{{ $bem->created_at?->format('d/m/Y H:i') ?? '-' }}</div>
                 <div class="text-muted small mt-2">Atualizado em</div>
-                <div class="fw-semibold">{{ $bem->updated_at->format('d/m/Y H:i') }}</div>
+                <div class="fw-semibold">{{ $bem->updated_at?->format('d/m/Y H:i') ?? '-' }}</div>
             </div>
         </div>
     </div>
 </div>
 
 <div class="d-flex gap-2 mt-2">
-    <a href="{{ route('bens.edit', $bem) }}" class="btn btn-primary"><i class="bi bi-pencil me-1"></i>Editar</a>
+    <a href="{{ route('bens.edit', $bem->id) }}" class="btn btn-primary"><i class="bi bi-pencil me-1"></i>Editar</a>
     <a href="{{ route('bens.index') }}" class="btn btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i>Voltar</a>
 </div>
 @endsection

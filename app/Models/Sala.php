@@ -17,7 +17,7 @@ class Sala extends Model
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-            ->logFillable()
+            ->logOnly(['unidade_id', 'nome', 'numero', 'andar', 'ativo'])
             ->logOnlyDirty()
             ->setDescriptionForEvent(fn(string $eventName) => match($eventName) {
                 'created' => "Sala '{$this->nome}' foi cadastrada",

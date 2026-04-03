@@ -19,19 +19,37 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
-    Route::resource('bens', BemController::class);
-    Route::get('bens-exportar', [BemController::class, 'exportar'])->name('bens.exportar');
-    Route::post('bens-importar', [BemController::class, 'importar'])->name('bens.importar');
-    Route::resource('usuarios', UsuarioController::class);
-    Route::resource('unidades', UnidadeController::class);
-    Route::resource('salas', SalaController::class);
-    Route::resource('categorias', CategoriaBemController::class)->parameters(['categorias' => 'categoria']);
+    // Bens - leitura para todos os autenticados
+    Route::get('bens', [BemController::class, 'index'])->name('bens.index');
+    Route::get('bens/{ben}', [BemController::class, 'show'])->name('bens.show');
 
-    // API AJAX
+    // Exportar - admin e auditor
+    Route::get('bens-exportar', [BemController::class, 'exportar'])
+        ->middleware('role:admin,auditor')
+        ->name('bens.exportar');
+
+    // Escrita de bens + gestão de tabelas auxiliares - somente admin
+    Route::middleware('role:admin')->group(function () {
+        Route::get('bens/create', [BemController::class, 'create'])->name('bens.create');
+        Route::post('bens', [BemController::class, 'store'])->name('bens.store');
+        Route::get('bens/{ben}/edit', [BemController::class, 'edit'])->name('bens.edit');
+        Route::put('bens/{ben}', [BemController::class, 'update'])->name('bens.update');
+        Route::patch('bens/{ben}', [BemController::class, 'update']);
+        Route::delete('bens/{ben}', [BemController::class, 'destroy'])->name('bens.destroy');
+
+        Route::post('bens-importar', [BemController::class, 'importar'])->name('bens.importar');
+
+        Route::resource('usuarios', UsuarioController::class);
+        Route::resource('unidades', UnidadeController::class);
+        Route::resource('salas', SalaController::class);
+        Route::resource('categorias', CategoriaBemController::class)->parameters(['categorias' => 'categoria']);
+    });
+
+    // API AJAX — throttle + validação de tipo no parâmetro
     Route::get('api/salas-por-unidade/{unidade}', function ($unidade) {
         $salas = Sala::where('unidade_id', $unidade)->where('ativo', true)->orderBy('nome')->get(['id', 'nome', 'numero']);
         return response()->json($salas);
-    })->name('api.salas');
+    })->where('unidade', '\d+')->middleware('throttle:60,1')->name('api.salas');
 
     // Auditoria - apenas admin e auditor
     Route::middleware('role:admin,auditor')->group(function () {

@@ -38,14 +38,14 @@ class BensImport implements ToModel, WithHeadingRow, SkipsOnError
         // Resolver categoria por nome
         $categoriaId = null;
         if (!empty($row['categoria'])) {
-            $cat = CategoriaBem::whereRaw('lower(nome) = ?', [strtolower($row['categoria'])])->first();
+            $cat = CategoriaBem::whereRaw('LOWER(nome) = LOWER(?)', [$row['categoria']])->first();
             $categoriaId = $cat?->id ?? CategoriaBem::first()?->id;
         }
 
         // Resolver unidade por nome
         $unidadeId = null;
         if (!empty($row['unidade'])) {
-            $uni = Unidade::whereRaw('lower(nome) = ?', [strtolower($row['unidade'])])->first();
+            $uni = Unidade::whereRaw('LOWER(nome) = LOWER(?)', [$row['unidade']])->first();
             $unidadeId = $uni?->id;
         }
 
@@ -53,7 +53,7 @@ class BensImport implements ToModel, WithHeadingRow, SkipsOnError
         $salaId = null;
         if (!empty($row['sala']) && $unidadeId) {
             $sala = Sala::where('unidade_id', $unidadeId)
-                ->whereRaw('lower(nome) = ?', [strtolower($row['sala'])])
+                ->whereRaw('LOWER(nome) = LOWER(?)', [$row['sala']])
                 ->first();
             $salaId = $sala?->id;
         }
@@ -61,7 +61,7 @@ class BensImport implements ToModel, WithHeadingRow, SkipsOnError
         // Resolver responsável por nome
         $usuarioId = null;
         if (!empty($row['responsavel'])) {
-            $usuario = Usuario::whereRaw('lower(nome) = ?', [strtolower($row['responsavel'])])->first();
+            $usuario = Usuario::whereRaw('LOWER(nome) = LOWER(?)', [$row['responsavel']])->first();
             $usuarioId = $usuario?->id;
         }
 

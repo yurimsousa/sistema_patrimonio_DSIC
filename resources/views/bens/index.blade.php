@@ -111,13 +111,13 @@
                             </td>
                             <td>
                                 <div class="d-flex gap-1">
-                                    <a href="{{ route('bens.show', $bem) }}" class="btn btn-sm btn-outline-secondary" title="Visualizar">
+                                    <a href="{{ route('bens.show', $bem->id) }}" class="btn btn-sm btn-outline-secondary" title="Visualizar">
                                         <i class="bi bi-eye"></i>
                                     </a>
-                                    <a href="{{ route('bens.edit', $bem) }}" class="btn btn-sm btn-outline-primary" title="Editar">
+                                    <a href="{{ route('bens.edit', $bem->id) }}" class="btn btn-sm btn-outline-primary" title="Editar">
                                         <i class="bi bi-pencil"></i>
                                     </a>
-                                    <form action="{{ route('bens.destroy', $bem) }}" method="POST" onsubmit="return confirm('Deseja remover este bem?')">
+                                    <form action="{{ route('bens.destroy', $bem->id) }}" method="POST" onsubmit="return confirm('Deseja remover este bem?')">
                                         @csrf @method('DELETE')
                                         <button class="btn btn-sm btn-outline-danger" title="Remover">
                                             <i class="bi bi-trash"></i>

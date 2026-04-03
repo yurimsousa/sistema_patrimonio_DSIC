@@ -100,12 +100,12 @@
                                             <td class="px-4 fw-semibold small text-uppercase text-muted">{{ str_replace('_', ' ', $campo) }}</td>
                                             <td>
                                                 <span class="badge bg-danger bg-opacity-10 text-danger font-monospace" style="font-size:.8rem;">
-                                                    {{ is_array($valorAntigo) ? json_encode($valorAntigo) : ($valorAntigo ?? 'null') }}
+                                                    {{ is_array($valorAntigo) ? e(json_encode($valorAntigo)) : ($valorAntigo ?? 'null') }}
                                                 </span>
                                             </td>
                                             <td>
                                                 <span class="badge bg-success bg-opacity-10 text-success font-monospace" style="font-size:.8rem;">
-                                                    {{ is_array($novoValor) ? json_encode($novoValor) : ($novoValor ?? 'null') }}
+                                                    {{ is_array($novoValor) ? e(json_encode($novoValor)) : ($novoValor ?? 'null') }}
                                                 </span>
                                             </td>
                                         </tr>
@@ -136,7 +136,7 @@
                                     @foreach($log->properties->get('attributes', $log->properties) as $campo => $valor)
                                         <tr>
                                             <td class="px-4 fw-semibold small text-uppercase text-muted">{{ str_replace('_', ' ', $campo) }}</td>
-                                            <td class="font-monospace small">{{ is_array($valor) ? json_encode($valor) : ($valor ?? 'null') }}</td>
+                                            <td class="font-monospace small">{{ is_array($valor) ? e(json_encode($valor)) : ($valor ?? 'null') }}</td>
                                         </tr>
                                     @endforeach
                                 </tbody>
@@ -150,7 +150,7 @@
         <div class="card">
             <div class="card-body px-4">
                 <h6 class="fw-semibold mb-2"><i class="bi bi-code-slash me-2 text-secondary"></i>Dados Brutos</h6>
-                <pre class="bg-light p-3 rounded small mb-0" style="max-height:200px;overflow:auto;">{{ json_encode($log->properties, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) }}</pre>
+                <pre class="bg-light p-3 rounded small mb-0" style="max-height:200px;overflow:auto;">{{ e(json_encode($log->properties, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)) }}</pre>
             </div>
         </div>
     </div>

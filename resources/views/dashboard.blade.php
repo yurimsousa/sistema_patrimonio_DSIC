@@ -159,7 +159,7 @@
                     @forelse($ultimosBens as $bem)
                         <tr>
                             <td class="px-4">
-                                <a href="{{ route('bens.show', $bem) }}" class="text-decoration-none fw-semibold">{{ $bem->nome }}</a>
+                                <a href="{{ route('bens.show', $bem->id) }}" class="text-decoration-none fw-semibold">{{ $bem->nome }}</a>
                                 @if($bem->numero_patrimonio)
                                     <br><small class="text-muted">{{ $bem->numero_patrimonio }}</small>
                                 @endif
