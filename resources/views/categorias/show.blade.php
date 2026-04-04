@@ -22,7 +22,7 @@
                 <tbody>
                     @forelse($categoria->bens as $bem)
                         <tr>
-                            <td class="px-4"><a href="{{ route('bens.show', $bem) }}">{{ $bem->nome }}</a></td>
+                            <td class="px-4"><a href="{{ route('bens.show', $bem->id) }}">{{ $bem->nome }}</a></td>
                             <td>{{ $bem->unidade->nome ?? '-' }}</td>
                             <td>{{ $bem->sala->nome ?? '-' }}</td>
                             <td><span class="badge bg-{{ $bem->status_color }}">{{ $bem->status_label }}</span></td>

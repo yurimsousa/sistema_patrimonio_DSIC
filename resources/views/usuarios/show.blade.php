@@ -60,7 +60,7 @@
                             @forelse($usuario->bens as $bem)
                                 <tr>
                                     <td class="px-4">
-                                        <a href="{{ route('bens.show', $bem) }}" class="fw-semibold text-decoration-none">{{ $bem->nome }}</a>
+                                        <a href="{{ route('bens.show', $bem->id) }}" class="fw-semibold text-decoration-none">{{ $bem->nome }}</a>
                                         @if($bem->numero_patrimonio)<br><small class="text-muted">{{ $bem->numero_patrimonio }}</small>@endif
                                     </td>
                                     <td>{{ $bem->categoria->nome ?? '-' }}</td>

@@ -10,7 +10,7 @@
                 <h6 class="fw-semibold mb-0"><i class="bi bi-pencil me-2 text-primary"></i>Editar: {{ $bem->nome }}</h6>
             </div>
             <div class="card-body px-4">
-                <form action="{{ route('bens.update', $bem) }}" method="POST">
+                <form action="{{ route('bens.update', $bem->id) }}" method="POST">
                     @csrf @method('PUT')
 
                     <div class="row g-3">
