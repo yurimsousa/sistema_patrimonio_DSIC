@@ -319,9 +319,7 @@
         @if($responsavel)
             <div class="assinatura-nome">{{ $responsavel->nome }}</div>
             <div class="assinatura-info">
-                @if($responsavel->cargo) {{ $responsavel->cargo }}<br>@endif
                 @if($responsavel->matricula) SIAPE: {{ $responsavel->matricula }}<br>@endif
-                @if($responsavel->email) {{ $responsavel->email }}@endif
             </div>
         @else
             <div class="assinatura-nome">_______________________________</div>
