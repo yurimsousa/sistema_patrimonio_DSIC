@@ -42,6 +42,7 @@ Route::middleware('auth')->group(function () {
 
     // Bens - rotas dinâmicas (após as estáticas para não capturar 'create')
     Route::get('bens/{bem}', [BemController::class, 'show'])->name('bens.show');
+    Route::get('bens/{bem}/cautela', [BemController::class, 'cautela'])->name('bens.cautela');
 
     Route::middleware('role:admin')->group(function () {
         Route::get('bens/{bem}/edit', [BemController::class, 'edit'])->name('bens.edit');

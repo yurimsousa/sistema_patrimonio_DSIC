@@ -145,6 +145,12 @@ class BemController extends Controller
         return Excel::download(new BensExport($filtros), $nomeArquivo);
     }
 
+    public function cautela(Bem $bem)
+    {
+        $bem->load(['categoria', 'unidade', 'sala', 'usuario']);
+        return view('bens.cautela', compact('bem'));
+    }
+
     public function importar(Request $request)
     {
         $request->validate([

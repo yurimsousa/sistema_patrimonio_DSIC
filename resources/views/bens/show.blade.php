@@ -109,7 +109,12 @@
 </div>
 
 <div class="d-flex gap-2 mt-2">
+    @if(auth()->user()->role === 'admin')
     <a href="{{ route('bens.edit', $bem->id) }}" class="btn btn-primary"><i class="bi bi-pencil me-1"></i>Editar</a>
+    @endif
+    <a href="{{ route('bens.cautela', $bem->id) }}" class="btn btn-success" target="_blank">
+        <i class="bi bi-file-earmark-text me-1"></i>Gerar Cautela
+    </a>
     <a href="{{ route('bens.index') }}" class="btn btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i>Voltar</a>
 </div>
 @endsection
