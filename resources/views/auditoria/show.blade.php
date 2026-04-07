@@ -148,11 +148,46 @@
         @endif
 
         <div class="card">
-            <div class="card-body px-4">
-                <h6 class="fw-semibold mb-2"><i class="bi bi-code-slash me-2 text-secondary"></i>Dados Brutos</h6>
-                <pre class="bg-light p-3 rounded small mb-0" style="max-height:200px;overflow:auto;">{{ e(json_encode($log->properties, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)) }}</pre>
+            <div class="card-header bg-transparent border-0 pt-3 px-4 d-flex align-items-center justify-content-between">
+                <h6 class="fw-semibold mb-0">
+                    <i class="bi bi-code-slash me-2 text-secondary"></i>Dados Técnicos
+                </h6>
+                <button class="btn btn-sm btn-outline-secondary" type="button"
+                    data-bs-toggle="collapse" data-bs-target="#dadosBrutos" aria-expanded="false">
+                    <i class="bi bi-chevron-down me-1"></i>Expandir
+                </button>
+            </div>
+            <div class="collapse" id="dadosBrutos">
+                <div class="card-body px-4 pt-0">
+                    <p class="text-muted small mb-2">Representação interna do registro salvo pelo sistema de auditoria.</p>
+                    <div class="position-relative">
+                        <button class="btn btn-sm btn-outline-secondary position-absolute top-0 end-0 m-2"
+                            id="btnCopiar" title="Copiar JSON" onclick="copiarJson()">
+                            <i class="bi bi-clipboard"></i>
+                        </button>
+                        <pre id="jsonBruto" class="bg-dark text-light p-3 rounded small mb-0"
+                            style="max-height:300px;overflow:auto;padding-right:3rem!important;">{!! e(json_encode($log->properties, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)) !!}</pre>
+                    </div>
+                </div>
             </div>
         </div>
+
+@push('scripts')
+<script>
+function copiarJson() {
+    const texto = document.getElementById('jsonBruto').innerText;
+    navigator.clipboard.writeText(texto).then(() => {
+        const btn = document.getElementById('btnCopiar');
+        btn.innerHTML = '<i class="bi bi-clipboard-check"></i>';
+        btn.classList.replace('btn-outline-secondary', 'btn-success');
+        setTimeout(() => {
+            btn.innerHTML = '<i class="bi bi-clipboard"></i>';
+            btn.classList.replace('btn-success', 'btn-outline-secondary');
+        }, 2000);
+    });
+}
+</script>
+@endpush
     </div>
 </div>
 
