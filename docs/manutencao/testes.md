@@ -4,18 +4,148 @@ Estratégias e procedimentos para validar o funcionamento do sistema.
 
 ---
 
+## Testes Automatizados (PHPUnit)
+
+O projeto possui uma suite completa de testes automatizados usando **PHPUnit** com banco **SQLite in-memory** (sem dependência de Oracle para rodar).
+
+### Rodar todos os testes
+
+```bash
+php artisan test
+```
+
+Saída esperada:
+
+```
+Tests:    68 passed (110 assertions)
+Duration: ~5s
+```
+
+### Rodar por suite
+
+```bash
+php artisan test --testsuite=Unit     # Apenas testes unitários
+php artisan test --testsuite=Feature  # Apenas testes de feature
+```
+
+### Rodar um arquivo específico
+
+```bash
+php artisan test tests/Feature/BemControllerTest.php
+php artisan test tests/Feature/AuthorizationTest.php
+```
+
+---
+
+## Estrutura dos Testes
+
+```
+tests/
+├── Unit/
+│   ├── BemTest.php           # Accessors de status, casts, fillable
+│   └── UserTest.php          # isAdmin(), isAuditor(), labels, $hidden
+└── Feature/
+    ├── BemControllerTest.php  # CRUD completo + filtros + validações
+    ├── AuthorizationTest.php  # Controle de acesso por role
+    ├── ApiSalasTest.php       # API AJAX de salas
+    └── ExampleTest.php        # Smoke tests básicos
+```
+
+### Testes Unitários (`tests/Unit/`)
+
+Testam lógica isolada dos models, **sem acesso ao banco de dados**.
+
+| Arquivo | O que testa |
+|---------|-------------|
+| `BemTest.php` | `status_label`, `status_color`, `$fillable`, cast de `valor` e `data_aquisicao` |
+| `UserTest.php` | `isAdmin()`, `isAuditor()`, `role_label`, `role_color`, `$hidden` de password |
+
+### Testes de Feature (`tests/Feature/`)
+
+Testam o fluxo HTTP completo: requisição → controller → banco → resposta.
+
+#### `BemControllerTest.php` — 23 testes
+
+| Grupo | Cenários testados |
+|-------|-------------------|
+| Listagem | Exibe bens, filtra por status, busca por nome, filtra por unidade |
+| Show | Exibe detalhes, retorna 404 para ID inexistente |
+| Create/Store | Formulário carrega dados, cadastro válido, persiste todos os campos |
+| Validações | Falha sem nome, sem categoria, status inválido, patrimônio duplicado, valor negativo, categoria inexistente |
+| Edit/Update | Formulário carrega bem, atualização válida, permite mesmo patrimônio do próprio bem, rejeita patrimônio de outro bem |
+| Destroy | Remove do banco, 404 para inexistente |
+| Cautela | Página carrega com dados do bem |
+
+#### `AuthorizationTest.php` — 15 testes
+
+| Perfil | Cenários testados |
+|--------|-------------------|
+| Visitante | Redirecionado para `/login` em todas as rotas |
+| Usuário comum | Pode listar; não pode criar, editar, excluir, exportar, acessar auditoria |
+| Auditor | Pode exportar e acessar auditoria; não pode cadastrar ou excluir |
+| Admin | Pode acessar criação, auditoria e exportação |
+
+#### `ApiSalasTest.php` — 6 testes
+
+| Cenário |
+|---------|
+| Retorna salas ativas da unidade correta |
+| Não retorna salas inativas |
+| Não retorna salas de outras unidades |
+| Retorna array vazio para unidade sem salas |
+| Rejeita parâmetro não numérico (404) |
+| Exige autenticação (redireciona para /login) |
+
+---
+
+## Factories Disponíveis
+
+As factories permitem criar dados de teste facilmente:
+
+```php
+// Usuários por perfil
+User::factory()->admin()->create();
+User::factory()->auditor()->create();
+User::factory()->create(); // role=usuario
+
+// Bens por status
+Bem::factory()->create();             // ativo
+Bem::factory()->inativo()->create();
+Bem::factory()->emManutencao()->create();
+Bem::factory()->descartado()->create();
+
+// Entidades relacionadas
+CategoriaBem::factory()->create();
+Unidade::factory()->create();
+Unidade::factory()->inativa()->create();
+Sala::factory()->create();
+Usuario::factory()->create();
+Usuario::factory()->inativo()->create();
+```
+
+---
+
+## Configuração do Ambiente de Testes
+
+O arquivo `phpunit.xml` configura automaticamente:
+
+- Banco: **SQLite in-memory** (sem instalar Oracle)
+- Sessão: `array` (sem persistência entre requisições)
+- Cache: `array`
+- Email: `array` (não envia e-mails reais)
+- `APP_ENV=testing`
+
+Cada teste usa `RefreshDatabase` — o banco é recriado do zero a cada teste, garantindo isolamento total.
+
+---
+
 ## Testes Manuais
 
 ### Verificação do Ambiente
 
 ```bash
-# Confirmar que o servidor está rodando
 php artisan serve
-
-# Listar todas as rotas registradas
 php artisan route:list
-
-# Verificar status das migrations
 php artisan migrate:status
 ```
 
@@ -28,114 +158,40 @@ php artisan migrate:status
 
 ### Verificação de Permissões por Perfil
 
-| Usuário               | Acesso esperado                                       |
-|-----------------------|-------------------------------------------------------|
-| admin@patrimonio.com  | Acesso total: todas as seções + auditoria             |
-| auditor@patrimonio.com| Apenas leitura + auditoria (sem criar/editar/excluir) |
-| operador@patrimonio.com| CRUD nos módulos, sem acesso à auditoria             |
-
-Para testar a restrição de auditoria:
-1. Faça login como `operador@patrimonio.com`
-2. Acesse diretamente `http://localhost:8000/auditoria`
-3. Deve retornar **HTTP 403 Forbidden**
-
-### Teste de CRUD — Bens
-
-1. Navegue para **Bens > Novo Bem**
-2. Preencha todos os campos obrigatórios (tombo, nome, categoria, unidade)
-3. Salve — verifique o redirecionamento e a mensagem de sucesso
-4. Edite o bem criado
-5. Verifique se a linha aparece no **Log de Auditoria** com evento `created` e `updated`
-6. Exclua o bem — verifique evento `deleted` na auditoria
+| Usuário | Acesso esperado |
+|---------|-----------------|
+| admin@patrimonio.com | Acesso total: todas as seções + auditoria + exportação |
+| auditor@patrimonio.com | Leitura + auditoria + exportação (sem criar/editar/excluir) |
+| operador@patrimonio.com | Listagem e visualização, sem acesso à auditoria |
 
 ### Teste do Filtro de Salas por Unidade
 
 1. Vá em **Bens > Novo Bem** ou **Editar Bem**
 2. Selecione uma unidade no campo Unidade
-3. O campo Sala deve atualizar dinamicamente via AJAX com as salas da unidade selecionada
+3. O campo Sala deve atualizar dinamicamente via AJAX
 4. Troque a unidade — as salas devem ser recarregadas
-
-### Teste de Filtros no Dashboard
-
-1. Acesse a rota `GET /bens?unidade_id=1` (substitua pelo ID real)
-2. Verifique que apenas bens da unidade aparecem
-3. Combine com `sala_id` e `status`
-
----
-
-## Testes de Integração (Artisan Tinker)
-
-O `tinker` permite testar a camada de modelo diretamente:
-
-```bash
-php artisan tinker
-```
-
-### Verificar criação de bem e registro de auditoria
-
-```php
-// Criar um bem de teste
-$bem = \App\Models\Bem::create([
-    'tombo'        => 'TEST-001',
-    'nome'         => 'Bem de Teste',
-    'categoria_id' => 1,
-    'unidade_id'   => 1,
-    'status'       => 'ativo',
-]);
-
-// Verificar se o log foi criado
-\Spatie\Activitylog\Models\Activity::latest()->first();
-```
-
-### Consultar usuários e perfis
-
-```php
-\App\Models\User::all(['id', 'name', 'email', 'role']);
-```
-
-### Verificar contagem de bens por status
-
-```php
-\App\Models\Bem::selectRaw('status, count(*) as total')
-    ->groupBy('status')
-    ->get();
-```
-
----
-
-## Testes de Autenticação (curl)
-
-```bash
-# Deve retornar 302 → redirecionar para /login
-curl -I http://localhost:8000/
-
-# Deve retornar 200
-curl -I http://localhost:8000/login
-```
 
 ---
 
 ## Checklist de Validação Pós-Deploy
 
-Antes de qualquer entrega ou deploy em produção, verifique:
-
+- [ ] Todos os 68 testes passando: `php artisan test`
 - [ ] Login funcionando para os três perfis
 - [ ] Dashboard exibe dados corretos
 - [ ] CRUD de Bens: criar, editar, visualizar, excluir
-- [ ] CRUD de Unidades e Salas: criar e vincular
+- [ ] Exportação XLSX funciona (admin e auditor)
+- [ ] Importação de planilha funciona (admin)
+- [ ] Cautela de bem gera documento corretamente
 - [ ] Filtro dinâmico de salas por unidade (AJAX)
 - [ ] Filtros na listagem de bens funcionando
 - [ ] Auditoria: log registrado para criar/editar/excluir bens
 - [ ] Perfil `operador` não acessa `/auditoria` (403)
 - [ ] Perfil `auditor` acessa auditoria mas não altera dados
-- [ ] Paginação funcionando nas listagens
 - [ ] Sem erros no `storage/logs/laravel.log`
 
 ---
 
 ## Limpeza de Cache
-
-Após alterações de configuração ou código:
 
 ```bash
 php artisan config:clear
@@ -144,7 +200,7 @@ php artisan view:clear
 php artisan route:clear
 ```
 
-Para ambiente de produção, reconstruir o cache:
+Para produção, reconstruir o cache:
 
 ```bash
 php artisan config:cache

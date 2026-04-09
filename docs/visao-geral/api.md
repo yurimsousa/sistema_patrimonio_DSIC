@@ -28,15 +28,18 @@ O sistema é uma aplicação web tradicional (server-side rendering com Blade). 
 
 ## Bens
 
-| Método | URI | Nome da Rota | Ação |
-|---|---|---|---|
-| `GET` | `/bens` | `bens.index` | Listar bens (com filtros) |
-| `GET` | `/bens/create` | `bens.create` | Formulário de cadastro |
-| `POST` | `/bens` | `bens.store` | Salvar novo bem |
-| `GET` | `/bens/{id}` | `bens.show` | Ver detalhes |
-| `GET` | `/bens/{id}/edit` | `bens.edit` | Formulário de edição |
-| `PUT` | `/bens/{id}` | `bens.update` | Atualizar bem |
-| `DELETE` | `/bens/{id}` | `bens.destroy` | Remover bem |
+| Método | URI | Nome da Rota | Acesso | Ação |
+|---|---|---|---|---|
+| `GET` | `/bens` | `bens.index` | Todos autenticados | Listar bens (com filtros) |
+| `GET` | `/bens/create` | `bens.create` | admin | Formulário de cadastro |
+| `POST` | `/bens` | `bens.store` | admin | Salvar novo bem |
+| `GET` | `/bens/{id}` | `bens.show` | Todos autenticados | Ver detalhes |
+| `GET` | `/bens/{id}/edit` | `bens.edit` | admin | Formulário de edição |
+| `PUT` | `/bens/{id}` | `bens.update` | admin | Atualizar bem |
+| `DELETE` | `/bens/{id}` | `bens.destroy` | admin | Remover bem |
+| `GET` | `/bens/{id}/cautela` | `bens.cautela` | Todos autenticados | Gerar documento de cautela |
+| `GET` | `/bens-exportar` | `bens.exportar` | admin, auditor | Exportar listagem em `.xlsx` |
+| `POST` | `/bens-importar` | `bens.importar` | admin | Importar bens via planilha `.xlsx` |
 
 ### Parâmetros de filtro — GET `/bens`
 
@@ -131,9 +134,12 @@ O sistema é uma aplicação web tradicional (server-side rendering com Blade). 
 
 ## API Interna (AJAX)
 
-| Método | URI | Nome da Rota | Descrição |
-|---|---|---|---|
-| `GET` | `/api/salas-por-unidade/{unidade_id}` | `api.salas` | Retorna salas de uma unidade em JSON |
+| Método | URI | Nome da Rota | Acesso | Descrição |
+|---|---|---|---|---|
+| `GET` | `/api/salas-por-unidade/{unidade_id}` | `api.salas` | Todos autenticados | Retorna salas ativas de uma unidade em JSON |
+
+**Rate limit:** 60 requisições por minuto (`throttle:60,1`).
+**Validação:** o parâmetro `{unidade_id}` aceita apenas valores numéricos — parâmetros inválidos retornam **404**.
 
 ### Resposta — GET `/api/salas-por-unidade/{id}`
 
@@ -144,4 +150,4 @@ O sistema é uma aplicação web tradicional (server-side rendering com Blade). 
 ]
 ```
 
-Usado no front-end para popular dinamicamente o select de salas ao selecionar uma unidade no formulário de bens.
+Retorna apenas salas com `ativo = true`. Usado no front-end para popular dinamicamente o select de salas ao selecionar uma unidade no formulário de bens.

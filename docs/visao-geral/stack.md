@@ -4,11 +4,13 @@
 
 | Tecnologia | Versão | Papel |
 |---|---|---|
-| **PHP** | 8.3 | Linguagem principal |
+| **PHP** | 8.2+ | Linguagem principal |
 | **Laravel** | 11.x | Framework MVC |
 | **yajra/laravel-oci8** | ^11.6 | Driver Oracle para Laravel |
 | **spatie/laravel-activitylog** | ^4.12 | Registro de auditoria |
+| **maatwebsite/excel** | ^3.1 | Importação e exportação de planilhas XLSX |
 | **laravel/ui** | ^4.6 | Scaffolding de autenticação |
+| **PHPUnit** | — | Suite de testes automatizados (68 testes) |
 
 ## Frontend
 
@@ -23,8 +25,8 @@
 
 | Ambiente | Banco | Driver |
 |---|---|---|
-| **Produção** | Oracle 12c+ | `yajra/laravel-oci8` + `pdo_oci` |
-| **Local/Testes** | SQLite | `pdo_sqlite` (nativo PHP) |
+| **Produção** | Oracle 12c+ (ou Oracle Cloud Autonomous DB) | `yajra/laravel-oci8` + `pdo_oci` |
+| **Local/Testes** | SQLite in-memory | `pdo_sqlite` (nativo PHP) |
 
 ## Ferramentas de Desenvolvimento
 
@@ -76,7 +78,7 @@
 
 ### Por que Bootstrap via CDN?
 - Simplicidade: sem necessidade de pipeline de build (webpack/vite) no ambiente atual
-- O PHP 8.3 disponível não tem `ext-fileinfo` habilitada por padrão, o que impediria o Vite de funcionar
+- O PHP disponível pode não ter `ext-fileinfo` habilitada por padrão, o que impediria o Vite de funcionar
 
 ### Por que spatie/activitylog?
 - Integração nativa com Eloquent (trait `LogsActivity`)

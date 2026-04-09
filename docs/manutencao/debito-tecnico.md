@@ -6,11 +6,24 @@ Limitações conhecidas, decisões de design e melhorias planejadas para versõe
 
 ## Débitos Ativos
 
-### 1. Sem testes automatizados (PHPUnit / Pest)
+### ~~1. Sem testes automatizados (PHPUnit / Pest)~~ ✅ Resolvido
 
-**Impacto:** Alto
-**Descrição:** O projeto não possui nenhuma suite de testes automatizados. Toda validação é manual, o que aumenta o risco de regressão a cada alteração.
-**Solução recomendada:** Adicionar testes de feature com `php artisan make:test` usando banco SQLite in-memory para rodar em CI/CD.
+**Impacto:** ~~Alto~~ → **Resolvido**
+**Descrição:** ~~O projeto não possui nenhuma suite de testes automatizados.~~ Suite completa de testes implementada com PHPUnit e banco SQLite in-memory.
+
+**Implementado:**
+
+| Suite | Arquivo | Testes |
+|-------|---------|--------|
+| Unit | `tests/Unit/BemTest.php` | 12 — accessors de status, casts, fillable |
+| Unit | `tests/Unit/UserTest.php` | 11 — isAdmin, isAuditor, labels de role |
+| Feature | `tests/Feature/BemControllerTest.php` | 23 — CRUD completo, filtros, validações |
+| Feature | `tests/Feature/AuthorizationTest.php` | 15 — controle de acesso por role |
+| Feature | `tests/Feature/ApiSalasTest.php` | 6 — API AJAX de salas |
+
+```bash
+php artisan test   # Roda os 68 testes (≈5s)
+```
 
 ---
 
@@ -38,11 +51,15 @@ Limitações conhecidas, decisões de design e melhorias planejadas para versõe
 
 ---
 
-### 5. Sem exportação de relatórios (PDF/Excel)
+### ~~5. Sem exportação de relatórios (PDF/Excel)~~ ✅ Resolvido
 
-**Impacto:** Médio
-**Descrição:** Os dados só são acessíveis via interface web. Não há como exportar listagem de bens para PDF ou planilha.
-**Solução recomendada:** Integrar `barryvdh/laravel-dompdf` para PDF e `maatwebsite/excel` para XLSX.
+**Impacto:** ~~Médio~~ → **Resolvido**
+**Descrição:** ~~Os dados só são acessíveis via interface web.~~ Exportação XLSX implementada com `maatwebsite/excel ^3.1`.
+
+**Implementado:**
+- `GET /bens-exportar` — exporta a listagem de bens com os filtros ativos em formato `.xlsx`
+- Acesso restrito a `admin` e `auditor`
+- Importação via planilha também disponível em `POST /bens-importar` (admin)
 
 ---
 

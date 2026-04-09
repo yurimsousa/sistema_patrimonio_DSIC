@@ -8,7 +8,7 @@ Passo a passo para configurar o ambiente local do projeto do zero.
 
 | Ferramenta    | Versão mínima | Download                                      |
 |---------------|---------------|-----------------------------------------------|
-| PHP           | 8.3+          | https://windows.php.net/download/ (Windows)  |
+| PHP           | **8.2+**      | https://windows.php.net/download/ (Windows)  |
 | Composer      | 2.x           | https://getcomposer.org/                     |
 | Node.js / npm | 18+           | https://nodejs.org/                          |
 | Git           | 2.x           | https://git-scm.com/                         |
@@ -60,11 +60,15 @@ DB_CONNECTION=sqlite
 DB_DATABASE=C:\caminho\absoluto\projeto_patrimonio\database\database.sqlite
 
 SESSION_DRIVER=file
+SESSION_SECURE_COOKIE=false       # IMPORTANTE: manter false em local (HTTP)
 CACHE_STORE=file
 QUEUE_CONNECTION=sync
 ```
 
 > **Windows:** Use caminho absoluto com barras invertidas duplas ou barras normais no `DB_DATABASE`.
+
+!!! warning "SESSION_SECURE_COOKIE deve ser false em local"
+    Se `SESSION_SECURE_COOKIE=true` com `http://localhost`, o browser não envia o cookie de sessão e o login não funciona. Só ative em produção com HTTPS.
 
 ---
 
@@ -165,7 +169,7 @@ O Laravel 11 removeu o método `middleware()` do construtor do `Controller`. Rem
 
 ## Configuração para Oracle (Produção)
 
-Altere o `.env`:
+### Oracle on-premise (servidor próprio)
 
 ```dotenv
 DB_CONNECTION=oracle
@@ -174,12 +178,31 @@ DB_PORT=1521
 DB_DATABASE=ORCL
 DB_USERNAME=patrimonio
 DB_PASSWORD=SuaSenhaForte@2024
+DB_CHARSET=AL32UTF8
+DB_SERVER_VERSION=19c
 ```
 
+### Oracle Cloud (Autonomous Database)
+
+```dotenv
+DB_CONNECTION=oracle
+DB_TNS=patrimonio_high            # nome do serviço no tnsnames.ora do wallet
+DB_PORT=1522                      # porta SSL do Oracle Cloud (≠ 1521)
+DB_USERNAME=admin
+DB_PASSWORD=SuaSenhaForte@2024
+DB_CHARSET=AL32UTF8
+DB_SERVER_VERSION=19c
+```
+
+Também é necessário:
+1. Baixar o **Wallet** na Oracle Cloud Console e extrair no servidor
+2. Definir `TNS_ADMIN=/caminho/do/wallet` nas variáveis de sistema
+
 Certifique-se de que:
+
 - Oracle Instant Client 21+ está instalado
 - A extensão `oci8` está habilitada no `php.ini`
-- O pacote `yajra/laravel-oci8` está no `composer.json`
-- O arquivo `config/database.php` tem o driver `oracle` configurado
+- O pacote `yajra/laravel-oci8` está no `composer.json` ✅ (já incluído)
+- O arquivo `config/database.php` tem o driver `oracle` configurado ✅ (já configurado)
 
 Consulte a documentação de [conexão DBeaver](../banco-de-dados/dcl.md) para configurar um cliente de banco de dados.
